@@ -1,8 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:testing/pages/home_page.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  LoginPage({Key? key}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  GlobalKey<FormState> formkey = GlobalKey<FormState>();
+
+  void validate() {
+    if (formkey.currentState!.validate()) {
+      print("Validated");
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => HomePage()));
+    } else {
+      print("Not Validated");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +29,7 @@ class LoginPage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Form(
+          key: formkey,
           child: Column(
             children: [
               Image.asset("assets/images/log.png"),
@@ -35,25 +53,32 @@ class LoginPage extends StatelessWidget {
                         hintText: "Enter username",
                         labelText: "username",
                       ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "username cannot be empty";
+                        }
+                        return null;
+                      },
                     ),
                     TextFormField(
                       decoration: InputDecoration(
                         hintText: "Enter Password",
                         labelText: "Password",
                       ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "password cannot be empty";
+                        } else if (value.length < 8) {
+                          return "password length should be longer than 8";
+                        }
+
+                        return null;
+                      },
                     ),
                     SizedBox(
                       height: 20,
                     ),
-                    ElevatedButton(
-                      child: Text("Login"),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => HomePage()));
-                      },
-                    ),
+                    ElevatedButton(onPressed: validate, child: Text("Login")),
                   ],
                 ),
               ),
